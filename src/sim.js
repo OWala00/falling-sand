@@ -2,6 +2,7 @@ import { EMPTY, getCell, setCell } from './grid.js';
 
 export const SAND = 1;
 export const WATER = 2;
+export const STONE = 3;
 
 export function step(grid, leftToRight) {
   const preferred = leftToRight ? -1 : 1;

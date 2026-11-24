@@ -1,6 +1,6 @@
 import { createGrid, EMPTY } from './grid.js';
 import { draw } from './render.js';
-import { SAND, WATER, step } from './sim.js';
+import { SAND, WATER, STONE, step } from './sim.js';
 import { cellAt, stamp, strokeLine } from './paint.js';
 
 const canvas = document.getElementById('view');
@@ -10,7 +10,7 @@ canvas.height = grid.height;
 const ctx = canvas.getContext('2d');
 
 const brush = { size: 3, value: SAND };
-const materials = { sand: SAND, water: WATER, erase: EMPTY };
+const materials = { sand: SAND, water: WATER, stone: STONE, erase: EMPTY };
 const sizeButtons = [...document.querySelectorAll('[data-size]')];
 const materialButtons = [...document.querySelectorAll('[data-material]')];
 let last = null;

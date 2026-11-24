@@ -4,6 +4,7 @@ const PALETTE = [
   [13, 15, 18],
   [224, 180, 108],
   [58, 122, 196],
+  [96, 104, 116],
 ];
 
 export function draw(ctx, grid) {

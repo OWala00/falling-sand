@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createGrid, getCell, setCell, EMPTY } from '../src/grid.js';
-import { SAND, WATER, step } from '../src/sim.js';
+import { SAND, WATER, STONE, step } from '../src/sim.js';
 
 test('a grain of sand falls one cell per step through empty space', () => {
   const grid = createGrid(3, 6);
@@ -110,4 +110,48 @@ test('water poured into a container spreads until the floor is covered', () => {
   for (let y = 0; y < 9; y += 1) setCell(grid, 4, y, WATER);
   for (let i = 0; i < 300; i += 1) step(grid, i % 2 === 0);
   for (let x = 0; x < grid.width; x += 1) assert.equal(getCell(grid, x, 9), WATER);
+});
+
+test('sand stops on stone instead of falling through it', () => {
+  const grid = createGrid(3, 3);
+  for (let x = 0; x < 3; x += 1) setCell(grid, x, 2, STONE);
+  setCell(grid, 1, 1, SAND);
+  step(grid, true);
+  assert.equal(getCell(grid, 1, 1), SAND);
+  assert.equal(getCell(grid, 1, 2), STONE);
+});
+
+test('water does not flow through a stone wall', () => {
+  const grid = createGrid(5, 3);
+  for (const x of [0, 1, 2, 4]) setCell(grid, x, 2, STONE);
+  setCell(grid, 2, 1, STONE);
+  setCell(grid, 1, 1, WATER);
+  for (let i = 0; i < 50; i += 1) step(grid, i % 2 === 0);
+  assert.equal(getCell(grid, 1, 1), WATER);
+  assert.equal(getCell(grid, 3, 1), EMPTY);
+  assert.equal(getCell(grid, 4, 1), EMPTY);
+});
+
+test('sand piles on stone into a slope that falls away on both sides', () => {
+  const grid = createGrid(21, 10);
+  for (let x = 0; x < grid.width; x += 1) setCell(grid, x, 9, STONE);
+  for (let y = 0; y < 8; y += 1) setCell(grid, 10, y, SAND);
+  for (let i = 0; i < 300; i += 1) step(grid, i % 2 === 0);
+  const heights = [];
+  for (let x = 0; x < grid.width; x += 1) {
+    let height = 0;
+    for (let y = 0; y < grid.height; y += 1) if (getCell(grid, x, y) === SAND) height += 1;
+    heights.push(height);
+  }
+  const falls = (values) => values.every((value, i) => i === 0 || value <= values[i - 1]);
+  assert.equal(heights.reduce((sum, height) => sum + height, 0), 8);
+  assert.ok(falls(heights.slice(10)), `right side ${heights}`);
+  assert.ok(falls(heights.slice(0, 11).reverse()), `left side ${heights}`);
+  assert.ok(heights[8] > 0 && heights[12] > 0, `${heights}`);
+  for (let y = 0; y < grid.height; y += 1) {
+    for (let x = 0; x < grid.width; x += 1) {
+      if (getCell(grid, x, y) !== SAND) continue;
+      assert.ok([STONE, SAND].includes(getCell(grid, x, y + 1)), `sand floats at ${x},${y}`);
+    }
+  }
 });
