@@ -1,6 +1,6 @@
 import { createGrid, EMPTY } from './grid.js';
 import { draw } from './render.js';
-import { SAND, stepSand } from './sim.js';
+import { SAND, WATER, step } from './sim.js';
 import { cellAt, stamp, strokeLine } from './paint.js';
 
 const canvas = document.getElementById('view');
@@ -10,8 +10,9 @@ canvas.height = grid.height;
 const ctx = canvas.getContext('2d');
 
 const brush = { size: 3, value: SAND };
+const materials = { sand: SAND, water: WATER, erase: EMPTY };
 const sizeButtons = [...document.querySelectorAll('[data-size]')];
-const eraseButton = document.getElementById('erase');
+const materialButtons = [...document.querySelectorAll('[data-material]')];
 let last = null;
 let frame = 0;
 
@@ -22,10 +23,12 @@ for (const button of sizeButtons) {
   });
 }
 
-eraseButton.addEventListener('click', () => {
-  brush.value = brush.value === SAND ? EMPTY : SAND;
-  eraseButton.classList.toggle('active', brush.value === EMPTY);
-});
+for (const button of materialButtons) {
+  button.addEventListener('click', () => {
+    brush.value = materials[button.dataset.material];
+    for (const other of materialButtons) other.classList.toggle('active', other === button);
+  });
+}
 
 function cellUnderPointer(event) {
   return cellAt(grid, canvas.getBoundingClientRect(), event.clientX, event.clientY);
@@ -53,7 +56,7 @@ canvas.addEventListener('pointercancel', endStroke);
 function tick() {
   frame += 1;
   // alternating the scan direction each frame keeps piles from leaning
-  stepSand(grid, frame % 2 === 0);
+  step(grid, frame % 2 === 0);
   draw(ctx, grid);
   requestAnimationFrame(tick);
 }
