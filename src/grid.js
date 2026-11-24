@@ -21,3 +21,7 @@ export function setCell(grid, x, y, value) {
   grid.cells[y * grid.width + x] = value;
   return true;
 }
+
+export function clearGrid(grid) {
+  grid.cells.fill(EMPTY);
+}

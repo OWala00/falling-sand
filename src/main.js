@@ -1,8 +1,8 @@
-import { createGrid, EMPTY } from './grid.js';
+import { createGrid, clearGrid, EMPTY } from './grid.js';
 import { draw } from './render.js';
 import { SAND, WATER, STONE, step } from './sim.js';
 import { cellAt, stamp, strokeLine } from './paint.js';
-import { STEP_MS, advance, createClock } from './clock.js';
+import { createControls, togglePause, requestStep, stepsDue } from './controls.js';
 
 const canvas = document.getElementById('view');
 const grid = createGrid(200, 150);
@@ -14,7 +14,7 @@ const brush = { size: 3, value: SAND };
 const materials = { sand: SAND, water: WATER, stone: STONE, erase: EMPTY };
 const sizeButtons = [...document.querySelectorAll('[data-size]')];
 const materialButtons = [...document.querySelectorAll('[data-material]')];
-const clock = createClock(STEP_MS);
+const controls = createControls();
 let last = null;
 let stepCount = 0;
 let previous = null;
@@ -34,6 +34,36 @@ for (const button of materialButtons) {
     for (const other of materialButtons) other.classList.toggle('active', other === button);
   });
 }
+
+const pauseButton = document.querySelector('[data-action="pause"]');
+const stepButton = document.querySelector('[data-action="step"]');
+const clearButton = document.querySelector('[data-action="clear"]');
+const speedInput = document.getElementById('speed');
+const speedLabel = document.getElementById('speed-value');
+
+function syncPauseButton() {
+  pauseButton.textContent = controls.paused ? 'play' : 'pause';
+}
+
+pauseButton.addEventListener('click', () => {
+  togglePause(controls);
+  syncPauseButton();
+});
+
+stepButton.addEventListener('click', () => {
+  requestStep(controls);
+  syncPauseButton();
+});
+
+clearButton.addEventListener('click', () => {
+  clearGrid(grid);
+  edit();
+});
+
+speedInput.addEventListener('input', () => {
+  controls.speed = Number(speedInput.value);
+  speedLabel.textContent = `${controls.speed}x`;
+});
 
 function cellUnderPointer(event) {
   return cellAt(grid, canvas.getBoundingClientRect(), event.clientX, event.clientY);
@@ -66,7 +96,7 @@ canvas.addEventListener('pointerup', endStroke);
 canvas.addEventListener('pointercancel', endStroke);
 
 function frame(now) {
-  const steps = advance(clock, previous === null ? 0 : now - previous);
+  const steps = stepsDue(controls, previous === null ? 0 : now - previous);
   previous = now;
   for (let i = 0; i < steps && !settled; i += 1) {
     stepCount += 1;

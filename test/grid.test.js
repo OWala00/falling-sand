@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createGrid, getCell, setCell, EMPTY } from '../src/grid.js';
+import { createGrid, getCell, setCell, clearGrid, EMPTY } from '../src/grid.js';
 
 test('a new grid is empty and has the requested size', () => {
   const grid = createGrid(4, 3);
@@ -26,4 +26,12 @@ test('cells outside the grid are rejected', () => {
 test('grid sizes must be positive integers', () => {
   assert.throws(() => createGrid(0, 3), RangeError);
   assert.throws(() => createGrid(2.5, 3), RangeError);
+});
+
+test('clearing a grid empties every cell', () => {
+  const grid = createGrid(4, 3);
+  setCell(grid, 0, 0, 7);
+  setCell(grid, 3, 2, 7);
+  clearGrid(grid);
+  assert.ok(grid.cells.every((cell) => cell === EMPTY));
 });
