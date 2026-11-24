@@ -5,13 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Falling sand</title>
   <style>
-    html, body { margin: 0; height: 100%; background: #0d0f12; }
-    body { display: grid; place-items: center; }
-    canvas { width: min(90vw, 1000px); height: auto; image-rendering: pixelated; border: 1px solid #262c38; }
+    html, body { margin: 0; height: 100%; background: #0d0f12; color: #8b949e; font: 14px system-ui, sans-serif; }
+    body { display: grid; place-items: center; align-content: center; gap: 12px; }
+    canvas { width: min(90vw, 1000px); height: auto; image-rendering: pixelated; box-shadow: 0 0 0 1px #262c38; touch-action: none; cursor: crosshair; }
+    .tools { display: flex; gap: 8px; }
+    button { background: #161b22; color: inherit; border: 1px solid #262c38; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    button.active { border-color: #e0b46c; color: #e0b46c; }
   </style>
 </head>
 <body>
   <canvas id="view"></canvas>
+  <div class="tools">
+    <button data-size="1">1</button>
+    <button data-size="3" class="active">3</button>
+    <button data-size="5">5</button>
+    <button data-size="9">9</button>
+    <button id="erase">erase</button>
+  </div>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
