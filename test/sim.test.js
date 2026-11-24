@@ -3,6 +3,14 @@ import assert from 'node:assert/strict';
 import { createGrid, getCell, setCell, EMPTY } from '../src/grid.js';
 import { SAND, WATER, STONE, step } from '../src/sim.js';
 
+test('step reports whether any particle moved, so a settled grid can be skipped', () => {
+  const grid = createGrid(3, 4);
+  setCell(grid, 1, 0, SAND);
+  assert.equal(step(grid, true), true);
+  for (let i = 0; i < 10; i += 1) step(grid, i % 2 === 0);
+  assert.equal(step(grid, true), false);
+});
+
 test('a grain of sand falls one cell per step through empty space', () => {
   const grid = createGrid(3, 6);
   setCell(grid, 1, 0, SAND);

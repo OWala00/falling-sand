@@ -24,6 +24,7 @@ export function step(grid, leftToRight) {
       move(grid, moved, x, y, x - preferred, y + 1);
     }
   }
+  return moved.includes(1);
 }
 
 function flowDirection(grid, x, y, preferred) {
