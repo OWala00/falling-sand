@@ -1,5 +1,7 @@
 # Falling sand
 
+![Sand, water and stone painted into a greeting](docs/hello.png)
+
 A small sandbox for sand, water, and stone. Paint particles onto a 200 × 150 grid and watch them fall, pile up, and flow.
 
 ![Falling sand running in the browser](docs/screenshot.png)
