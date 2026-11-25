@@ -4,6 +4,8 @@
 
 A small sandbox for sand, water, and stone. Paint particles onto a 200 × 150 grid and watch them fall, pile up, and flow.
 
+**[Play it in your browser](https://falling-sand-21735c41.netlify.app)**
+
 ![Falling sand running in the browser](docs/screenshot.png)
 
 ## Run it
@@ -25,14 +27,15 @@ Then open http://localhost:8000.
 - **clear**: empty the grid.
 - **speed**: scale the simulation from 0.25x to 4x.
 
-## How the particles behave
+## The physics
 
-- Sand falls straight down. When the cell below is blocked, it slides diagonally. It sinks through water and comes to rest on stone.
-- Water falls when it can. When it is blocked, it flows toward the nearest gap that lets it drop.
-- Stone does not move.
+The behavior comes from a few local rules applied to every cell at a fixed rate. It is a cellular simulation, not a physics engine: each cell only looks at the cells next to it.
+
+- **Sand** is granular. It falls one cell per step under gravity. When the cell below is blocked, it slides diagonally, so piles build up into slopes instead of flattening out. It sinks through water, like real sand, and it comes to rest on stone.
+- **Water** is a fluid. It falls when it can. When it is blocked, it flows sideways toward the nearest gap that lets it drop, so it spreads across a floor and fills a container from the bottom up.
+- **Stone** is immovable. It blocks sand and water, so you can build floors, walls, and channels.
 - The scan direction alternates every step, so piles do not lean to one side.
-
-The simulation runs at a fixed 60 steps per second, whatever the display refresh rate. A long pause, such as a background tab, advances at most 15 steps when the page resumes. A settled grid skips work until you paint or clear again.
+- **Time** is fixed. The simulation runs at 60 steps per second whatever the display's refresh rate, so a scene plays out the same way on a 60 Hz and a 144 Hz screen. A long pause, such as a background tab, advances at most 15 steps when the page resumes, and a settled grid skips work until you paint or clear again.
 
 ## Tests
 
